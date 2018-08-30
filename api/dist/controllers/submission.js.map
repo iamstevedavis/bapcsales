@@ -1,0 +1,1 @@
+{"version":3,"file":"submission.js","sourceRoot":"","sources":["../../src/controllers/submission.ts"],"names":[],"mappings":";;AACA,qDAAkD;AAElD;IACE,MAAM,CAAC,uBAAuB,CAAC,QAAgB;QAC7C,OAAO,uBAAU,CAAC,OAAO,CAAC,EAAE,QAAQ,EAAE,CAAC,CAAC;IAC1C,CAAC;IAED,MAAM,CAAC,iBAAiB;QACtB,OAAO,uBAAU,CAAC,IAAI,EAAE,CAAC;IAC3B,CAAC;CACF;AARD,oDAQC"}

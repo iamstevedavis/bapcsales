@@ -1,0 +1,30 @@
+{
+  "name": "bapcsalesdatapuller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "tsc && node dist/app.js"
+  },
+  "author": "iamstevedavis",
+  "license": "ISC",
+  "dependencies": {
+    "@types/mongoose": "^5.0.17",
+    "@types/request-promise": "^4.1.41",
+    "@types/mongodb": "^3.0.21",
+    "bunyan": "^1.8.12",
+    "dotenv": "^6.0.0",
+    "mongoose": "^5.1.6",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2",
+    "snoostorm": "0.0.5",
+    "snoowrap": "^1.15.2",
+    "typescript": "^2.9.2"
+  },
+  "devDependencies": {
+    "ts-node": "^6.1.2",
+    "tslint": "^5.10.0"
+  }
+}
