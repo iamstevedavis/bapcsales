@@ -5,10 +5,7 @@
   "author": "Steve Davis",
   "license": "MIT",
   "private": true,
-  "scripts": {
-    "clean": "rm -rf */**/node_modules",
-    "install": "npm install yarn && node_modules/.bin/yarn"
-  },
+  "scripts": {},
   "workspaces": {
     "packages": [
       "api",

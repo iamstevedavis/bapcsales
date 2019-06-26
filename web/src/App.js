@@ -38,8 +38,10 @@ class App extends Component {
   }
 
   async APICall() {
-    const response = await fetch('http://localhost:3001/bapcsales/posts', { mode: 'cors' });
+    // Need error handling
+    const response = await fetch('http://localhost:3030/bapcsales/posts', { mode: 'cors' });
     const body = await response.json();
+
     this.setState({ apiResp: body, submissions: keyBy(body, 'redditId') });
   }
 
