@@ -2,14 +2,15 @@
   "compilerOptions": {
     "allowJs": false,
     "module": "commonjs",
-    // "esModuleInterop": true,
+    "esModuleInterop": true,
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*"

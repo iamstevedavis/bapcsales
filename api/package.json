@@ -11,12 +11,11 @@
   "author": "iamstevedavis",
   "license": "ISC",
   "dependencies": {
-    "@types/mongodb": "^3.1.2",
-    "@types/mongoose": "^5.2.3",
-    "@types/node": "^10.5.4",
-    "mongoose": "^5.2.6",
-    "restify": "^7.2.1",
-    "restify-cors-middleware": "^1.1.1",
+    "@types/mongodb": "^3.1.28",
+    "@types/mongoose": "^5.5.6",
+    "@types/node": "^10.14.10",
+    "mongoose": "^5.6.1",
+    "restify": "^7.7.0",
     "typescript": "^3.5.2"
   },
   "devDependencies": {}

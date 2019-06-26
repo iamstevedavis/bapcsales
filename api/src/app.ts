@@ -1,25 +1,9 @@
 
 import { createLogger, stdSerializers } from 'bunyan';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import * as restify from 'restify';
-import * as corsMiddleware from 'restify-cors-middleware';
 import { SubmissionController } from './controllers/submission';
-
-interface Config {
-  api: {
-    port: number;
-  };
-  db: {
-    username: string;
-    password: string;
-    host: string;
-    port: string;
-    scope: string;
-  };
-};
-
-const config: Config = require('./config.json');
-
+import config from './config.json';
 
 const log = createLogger({
   name: 'api',
@@ -44,15 +28,6 @@ server.pre((request, response, next) => {
   request.log.info({ req: request }, 'REQUEST');
   next();
 });
-
-const cors = corsMiddleware({
-  preflightMaxAge: 5, //Optional
-  origins: ['http://localhost:3002'],
-  allowHeaders: ['API-Token'],
-  exposeHeaders: ['API-Token-Expiry']
-})
-server.pre(cors.preflight)
-server.use(cors.actual)
 
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
