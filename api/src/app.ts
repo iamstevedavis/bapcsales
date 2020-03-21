@@ -2,8 +2,8 @@
 import { createLogger, stdSerializers } from 'bunyan';
 import mongoose from 'mongoose';
 import * as restify from 'restify';
+import config from './config.js';
 import { SubmissionController } from './controllers/submission';
-import config from './config.json';
 
 const log = createLogger({
   name: 'api',
@@ -13,7 +13,10 @@ const log = createLogger({
 })
 
 log.info('Connecting to mongo');
-mongoose.connect(`mongodb://${config.db.username}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.scope}`);
+mongoose.connect(
+  `mongodb://${config.db.username}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.scope}`,
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
+);
 log.info('Connected to mongo');
 
 const server = restify.createServer({

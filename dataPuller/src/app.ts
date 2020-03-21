@@ -1,13 +1,12 @@
 
 import { createLogger } from 'bunyan';
-import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import * as snoostorm from 'snoostorm';
 import * as snoowrap from 'snoowrap';
+import config from './config.js';
 import { HistorySubmissionPull } from './historySubmissionPull';
 import { ISnooSubmission, Submission } from './models/submission';
 
-dotenv.config();
 const log = createLogger({
   name: 'app',
   stream: process.stdout,
@@ -15,15 +14,17 @@ const log = createLogger({
 
 log.info('App started');
 log.info('Connecting to mongo');
-mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SCOPE}`);
+mongoose.connect(
+  `mongodb://${config.db.username}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.scope}`,
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
+);
 log.info('Connected to mongo');
 
 const snooWrapOpts: snoowrap.SnoowrapOptions = {
-  clientId: `${process.env.REDDIT_APP_CLIENT_ID}`,
-  clientSecret: `${process.env.REDDIT_APP_CLIENT_SECRET}`,
-  password: `${process.env.REDDIT_ACCOUNT_PASSWORD}`,
-  userAgent: 'myApp',
-  username: `${process.env.REDDIT_ACCOUNT_USERNAME}`,
+  clientId: config.reddit.clientId,
+  clientSecret: config.reddit.clientSecret,
+  userAgent: config.reddit.userAgent,
+  refreshToken: config.reddit.refreshToken
 };
 const client = new snoostorm(new snoowrap(snooWrapOpts));
 const submissionStream = client.SubmissionStream({ subreddit: 'bapcsalescanada' });

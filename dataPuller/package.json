@@ -11,20 +11,22 @@
   "author": "iamstevedavis",
   "license": "ISC",
   "dependencies": {
-    "@types/mongoose": "^5.0.17",
-    "@types/request-promise": "^4.1.41",
-    "@types/mongodb": "^3.0.21",
+    "@types/mongodb": "^3.5.2",
+    "@types/mongoose": "^5.7.7",
+    "@types/node": "^13.9.2",
+    "@types/request-promise": "^4.1.46",
     "bunyan": "^1.8.12",
-    "dotenv": "^6.0.0",
-    "mongoose": "^5.1.6",
-    "request": "^2.87.0",
-    "request-promise": "^4.2.2",
+    "dotenv": "^6.2.0",
+    "mongoose": "^5.9.5",
+    "reddit-oauth-helper": "^0.3.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
     "snoostorm": "0.0.5",
-    "snoowrap": "^1.15.2",
+    "snoowrap": "^1.21.0",
     "typescript": "^2.9.2"
   },
   "devDependencies": {
-    "ts-node": "^6.1.2",
-    "tslint": "^5.10.0"
+    "ts-node": "^6.2.0",
+    "tslint": "^5.20.1"
   }
 }

@@ -1,16 +1,16 @@
 
 import { createLogger } from 'bunyan';
 import * as snoowrap from 'snoowrap';
+import config from './config.js';
 import { ISnooSubmission, ISubmissionModel, Submission } from './models/submission';
 
 export class HistorySubmissionPull {
   private instSnoowrap;
   private snooWrapOpts: snoowrap.SnoowrapOptions = {
-    clientId: `${process.env.REDDIT_APP_CLIENT_ID}`,
-    clientSecret: `${process.env.REDDIT_APP_CLIENT_SECRET}`,
-    password: `${process.env.REDDIT_ACCOUNT_PASSWORD}`,
-    userAgent: 'myApp',
-    username: `${process.env.REDDIT_ACCOUNT_USERNAME}`,
+    clientId: config.reddit.clientId,
+    clientSecret: config.reddit.clientSecret,
+    userAgent: config.reddit.userAgent,
+    refreshToken: config.reddit.refreshToken
   };
   private log;
 
