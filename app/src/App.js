@@ -1,5 +1,5 @@
 
-import { chain, isEqual, keyBy } from 'lodash';
+import { chain, filter, isEqual, keyBy } from 'lodash';
 import React, { Component } from 'react';
 import './App.css';
 import DealTypeFilter from './components/DealTypeFilter';
@@ -13,8 +13,9 @@ class App extends Component {
       apiResp: {},
       submissions: {},
       dealTypes: [],
-      inactiveDealTypes: [],
+      uncheckedDealTypes: [],
       isCustomDealTypesView: false,
+      currentBulkViewSelection: "all"
     };
   }
 
@@ -45,37 +46,31 @@ class App extends Component {
     this.setState({ apiResp: body, submissions: keyBy(body, 'redditId') });
   }
 
-  dealTypes(event) {
-    let currentDealTypes = [];
-    if (event === 'all') {
-      currentDealTypes = [];
-    } else if (event === 'none') {
-      currentDealTypes = this.state.dealTypes;
+  dealCheckboxCheck(deal, checked) {
+    let uncheckedDealTypes = this.state.uncheckedDealTypes;
+    if (checked) {
+      uncheckedDealTypes.splice(uncheckedDealTypes.indexOf(deal), 1);
     } else {
-      currentDealTypes = this.state.inactiveDealTypes;
-      if (currentDealTypes.indexOf(event) !== -1) {
-        currentDealTypes.splice(currentDealTypes.indexOf(event), 1);
-      } else {
-        currentDealTypes.push(event);
-      }
-      if (currentDealTypes.length === 0) {
-        this.setState({ isCustomDealTypesView: false });
-      } else if (currentDealTypes.length > 0 && currentDealTypes.length === this.state.dealTypes.length) {
-        this.setState({ isCustomDealTypesView: false });
-      } else {
-        this.setState({ isCustomDealTypesView: true });
-      }
+      uncheckedDealTypes.push(deal);
     }
+    const submissions = filter(this.state.apiResp, (submission) => {
+      if (uncheckedDealTypes.includes(submission.dealType)) {
+        return false;
+      }
+      return true;
+    });
+    this.setState({submissions, uncheckedDealTypes, currentBulkViewSelection: 'custom'})
+  }
 
-    const submissions = chain(this.state.apiResp)
-      .filter((o) => {
-        return currentDealTypes.every((dealType) => {
-          return o.dealType !== dealType;
-        })
-      })
-      .value();
-
-    this.setState({ submissions, inactiveDealTypes: currentDealTypes })
+  dealTypes(bulkViewSelection) {
+    console.log(`dealTypes ${bulkViewSelection}`)
+    if (bulkViewSelection === 'all') {
+      this.setState({ submissions: this.state.apiResp, uncheckedDealTypes: [], currentBulkViewSelection: bulkViewSelection });
+      return;
+    } else if (bulkViewSelection === 'none') {
+      this.setState({ submissions: [], uncheckedDealTypes: this.state.dealTypes, currentBulkViewSelection: bulkViewSelection });
+      return;
+    }
   }
 
   renderSubmission(submission) {
@@ -83,24 +78,24 @@ class App extends Component {
   }
 
   renderDealType(dealType, checkedState) {
-    return <DealTypeFilter key={dealType} dealTypes={this.dealTypes.bind(this)} checkedState={checkedState} dealType={dealType} />;
+    return <DealTypeFilter key={dealType} dealTypes={this.dealCheckboxCheck.bind(this)} checkedState={checkedState} dealType={dealType} />;
   }
 
   render() {
     const submissions = Object.keys(this.state.submissions);
     const dealTypes = this.state.dealTypes;
-    const inactiveDealTypes = this.state.inactiveDealTypes;
+    const uncheckedDealTypes = this.state.uncheckedDealTypes;
     const isCustomDealTypesView = this.state.isCustomDealTypesView;
 
     return (
       <div style={{}}>
         <div style={{ justifyContent: "center", display: "flex" }}>
-          <DealTypeToggler isCustom={isCustomDealTypesView} dealTypes={this.dealTypes.bind(this)} />
+          <DealTypeToggler isCustom={isCustomDealTypesView} dealTypes={this.dealTypes.bind(this)} value={this.state.currentBulkViewSelection}/>
         </div>
         <div style={{ justifyContent: "center", width: "100%", flexWrap: "wrap", display: "flex", flexDirection: "row" }}>
           {dealTypes.map((dealType) => {
             let checkedState = true;
-            if (inactiveDealTypes.indexOf(dealType) !== -1) {
+            if (uncheckedDealTypes.indexOf(dealType) !== -1) {
               checkedState = false;
             }
             return this.renderDealType(dealType, checkedState);

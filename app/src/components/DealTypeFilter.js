@@ -14,7 +14,7 @@ class DealTypeFilter extends React.Component {
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.checked });
-    this.props.dealTypes(event.target.name)
+    this.props.dealTypes(event.target.name, event.target.checked);
   };
 
   render() {

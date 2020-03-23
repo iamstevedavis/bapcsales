@@ -21,18 +21,13 @@ const styles = theme => ({
 });
 
 class DealTypeToggler extends React.Component {
-  state = {
-    value: 'all',
-  };
-
   handleChange = event => {
     this.setState({ value: event.target.value });
     this.props.dealTypes(event.target.value)
   };
 
   render() {
-    const { classes } = this.props;
-    const value = this.props.isCustom ? 'custom' : 'all';
+    const { classes, value } = this.props;
 
     return (
       <div className={classes.root}>
@@ -45,9 +40,9 @@ class DealTypeToggler extends React.Component {
             value={value}
             onChange={this.handleChange}
           >
-            <FormControlLabel value="all" control={<Radio color="primary" />} label="All" />
-            <FormControlLabel value="none" control={<Radio color="primary" />} label="None" />
-            <FormControlLabel value="custom" control={<Radio color="primary" />} label="Custom" />
+            <FormControlLabel value="all" control={<Radio />} label="All" />
+            <FormControlLabel value="none" control={<Radio />} label="None" />
+            <FormControlLabel value="custom" control={<Radio />} label="Custom" />
           </RadioGroup>
         </FormControl>
       </div>
