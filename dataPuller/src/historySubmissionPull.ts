@@ -9,8 +9,9 @@ export class HistorySubmissionPull {
   private snooWrapOpts: snoowrap.SnoowrapOptions = {
     clientId: config.reddit.clientId,
     clientSecret: config.reddit.clientSecret,
-    refreshToken: config.reddit.refreshToken,
+    password: config.reddit.password,
     userAgent: config.reddit.userAgent,
+    username: config.reddit.username,
   };
   private log;
 
@@ -27,11 +28,12 @@ export class HistorySubmissionPull {
   public fetchHotHistory() {
     this.log.info('Make call to reddit to get hot listings history');
     return this.instSnoowrap
-      .getHot('bapcsalescanada', { limit: 100, show: 'all' })
+      .getHot('bapcsalescanada', { limit: 10 })
       .then((listings: ISnooSubmission[]) => {
         this.log.info(`Got ${listings.length} listings`);
         const ids: string[] = listings.map((listing: ISnooSubmission): string => listing.id);
         this.log.info('Find already saved listings');
+        // Return retrieved listings, grab the listings in the database that have the same id
         return Promise.all([listings, Submission.aggregate([
           {
             $match: {
@@ -49,15 +51,15 @@ export class HistorySubmissionPull {
       .then(([listings, existingSubmissions]: [ISnooSubmission[], Array<{ redditId: string }>]) => {
         this.log.info('Filter saved listings');
         const existingSubmissionsIds: string[] = existingSubmissions.map((existingSubmission): string => existingSubmission.redditId);
-        return Promise.all(listings.reduce((prev: ISnooSubmission[], listing: ISnooSubmission): ISnooSubmission[] => {
+        // Figure out what listings to create by removing the listings from the list that are already in the database
+        const listingsToCreate: ISnooSubmission[] = listings.reduce((prev: ISnooSubmission[], listing: ISnooSubmission): ISnooSubmission[] => {
           if (existingSubmissionsIds.indexOf(listing.id) === -1) {
             prev.push(listing);
           }
           return prev;
-        }, []));
-      })
-      .then((listingsToCreate: ISnooSubmission[]) => {
+        }, []);
         this.log.info(`Creating ${listingsToCreate.length} new listings`);
+        // Create all the listings
         return Promise.all(listingsToCreate.map((listing: ISnooSubmission): Promise<ISubmissionModel> => {
           const submissionToCreate: ISubmissionModel = new Submission({
             authorName: listing.author.name,
@@ -84,7 +86,7 @@ export class HistorySubmissionPull {
   public fetchNewHistory() {
     this.log.info('Make call to reddit to get new listings history');
     return this.instSnoowrap
-      .getNew('bapcsalescanada', { limit: 100, show: 'all' })
+      .getNew('bapcsalescanada', { limit: 10 })
       .then((listings: ISnooSubmission[]) => {
         this.log.info(`Got ${listings.length} listings`);
         const ids: string[] = listings.map((listing: ISnooSubmission): string => listing.id);
@@ -106,15 +108,15 @@ export class HistorySubmissionPull {
       .then(([listings, existingSubmissions]: [ISnooSubmission[], Array<{ redditId: string }>]) => {
         this.log.info('Filter saved listings');
         const existingSubmissionsIds: string[] = existingSubmissions.map((existingSubmission): string => existingSubmission.redditId);
-        return Promise.all(listings.reduce((prev: ISnooSubmission[], listing: ISnooSubmission): ISnooSubmission[] => {
+        // Figure out what listings to create by removing the listings from the list that are already in the database
+        const listingsToCreate: ISnooSubmission[] = listings.reduce((prev: ISnooSubmission[], listing: ISnooSubmission): ISnooSubmission[] => {
           if (existingSubmissionsIds.indexOf(listing.id) === -1) {
             prev.push(listing);
           }
           return prev;
-        }, []));
-      })
-      .then((listingsToCreate: ISnooSubmission[]) => {
+        }, []);
         this.log.info(`Creating ${listingsToCreate.length} new listings`);
+        // Create all the listings
         return Promise.all(listingsToCreate.map((listing: ISnooSubmission): Promise<ISubmissionModel> => {
           const submissionToCreate: ISubmissionModel = new Submission({
             authorName: listing.author.name,

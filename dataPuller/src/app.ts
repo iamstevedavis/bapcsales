@@ -23,19 +23,22 @@ log.info('Connected to mongo');
 const snooWrapOpts: snoowrap.SnoowrapOptions = {
   clientId: config.reddit.clientId,
   clientSecret: config.reddit.clientSecret,
-  refreshToken: config.reddit.refreshToken,
+  password: config.reddit.password,
   userAgent: config.reddit.userAgent,
+  username: config.reddit.username,
 };
 const client = new snoostorm(new snoowrap(snooWrapOpts));
 const submissionStream = client.SubmissionStream({ subreddit: 'bapcsalescanada' });
 const historySubmissionPuller = new HistorySubmissionPull();
 
 log.info('Update submission history');
+// Get hot and new history and save to the database.
 historySubmissionPuller.fetchHotHistory()
   .then(() => historySubmissionPuller.fetchNewHistory())
   .then(() => {
     log.info('Submission history updated');
     log.info('Begin polling');
+    // This is supposed to poll forever so we get new submissions as they come in.
     submissionStream.on('submission', (post: ISnooSubmission) => {
       log.info('Got new submission');
       const newSubmission = new Submission({
