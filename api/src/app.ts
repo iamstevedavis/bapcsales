@@ -8,20 +8,20 @@ import { SubmissionController } from './controllers/submission';
 const log = createLogger({
   name: 'api',
   serializers: {
-    req: stdSerializers.req
-  }
-})
+    req: stdSerializers.req,
+  },
+});
 
 log.info('Connecting to mongo');
 mongoose.connect(
   `mongodb://${config.db.username}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.scope}`,
-  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
 );
 log.info('Connected to mongo');
 
 const server = restify.createServer({
   name: 'bapcsalesserver',
-  log
+  log,
 });
 
 /*****************************
@@ -53,7 +53,7 @@ server.get('/bapcsales/posts/:redditId', (req, res, next) => {
   if (!redditId) {
     res.send(400, {
       error: 'invalidParams',
-      message: 'You have not entered valid parameters for this route.'
+      message: 'You have not entered valid parameters for this route.',
     });
   }
 

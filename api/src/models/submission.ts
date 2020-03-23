@@ -34,7 +34,7 @@ export const SubmissionSchema: Schema = new Schema({
   subreddit_id: String,
   subreddit_name_prefixed: String,
   title: String,
-}).pre('save', function(this: ISubmissionModel, next) {
+}).pre('save', function (this: ISubmissionModel, next) {
   if (this) {
     let dType: DealType = 'unknown';
     DealTypeValues.some((element: string): boolean => {
@@ -44,6 +44,7 @@ export const SubmissionSchema: Schema = new Schema({
       }
     });
     if (dType === 'unknown') {
+      // Handle random types; possible spelling mistakes?
       // console.log(`Could not match deal type: ${this.title.toLowerCase()}`)
     }
     this.dealType = dType;

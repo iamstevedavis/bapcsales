@@ -9,8 +9,8 @@ export class HistorySubmissionPull {
   private snooWrapOpts: snoowrap.SnoowrapOptions = {
     clientId: config.reddit.clientId,
     clientSecret: config.reddit.clientSecret,
+    refreshToken: config.reddit.refreshToken,
     userAgent: config.reddit.userAgent,
-    refreshToken: config.reddit.refreshToken
   };
   private log;
 

@@ -16,15 +16,15 @@ log.info('App started');
 log.info('Connecting to mongo');
 mongoose.connect(
   `mongodb://${config.db.username}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.scope}`,
-  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
 );
 log.info('Connected to mongo');
 
 const snooWrapOpts: snoowrap.SnoowrapOptions = {
   clientId: config.reddit.clientId,
   clientSecret: config.reddit.clientSecret,
+  refreshToken: config.reddit.refreshToken,
   userAgent: config.reddit.userAgent,
-  refreshToken: config.reddit.refreshToken
 };
 const client = new snoostorm(new snoowrap(snooWrapOpts));
 const submissionStream = client.SubmissionStream({ subreddit: 'bapcsalescanada' });

@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
-    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "tslint": "tslint -c tslint.json -p tsconfig.json --fix",
     "start": "tsc && node dist/app.js"
   },
   "author": "iamstevedavis",
@@ -18,5 +18,7 @@
     "restify": "^8.5.1",
     "typescript": "^3.5.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "tslint": "^6.1.0"
+  }
 }
