@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     display: 'flex',
   },
@@ -21,11 +21,6 @@ const styles = theme => ({
 });
 
 class DealTypeToggler extends React.Component {
-  handleChange = event => {
-    this.setState({ value: event.target.value });
-    this.props.dealTypes(event.target.value)
-  };
-
   render() {
     const { classes, value } = this.props;
 
@@ -38,7 +33,7 @@ class DealTypeToggler extends React.Component {
             name="bulkDealType"
             className={classes.group}
             value={value}
-            onChange={this.handleChange}
+            onChange={(event) => this.props.dealTypes(event.target.value)}
           >
             <FormControlLabel value="all" control={<Radio />} label="All" />
             <FormControlLabel value="none" control={<Radio />} label="None" />
@@ -52,7 +47,6 @@ class DealTypeToggler extends React.Component {
 
 DealTypeToggler.propTypes = {
   classes: PropTypes.object.isRequired,
-  isCustom: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(DealTypeToggler);

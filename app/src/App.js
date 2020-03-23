@@ -1,7 +1,5 @@
-
-import { chain, filter, isEqual, keyBy } from 'lodash';
+import { chain, filter } from 'lodash';
 import React, { Component } from 'react';
-import './App.css';
 import DealTypeFilter from './components/DealTypeFilter';
 import DealTypeToggler from './components/DealTypeToggler';
 import Submission from './components/Submission';
@@ -10,104 +8,118 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      apiResp: {},
-      submissions: {},
-      dealTypes: [],
-      uncheckedDealTypes: [],
-      isCustomDealTypesView: false,
-      currentBulkViewSelection: "all"
+      redditSubmissions: [],
+      uncheckedSubmissionTypes: [],
+      currentBulkViewSelection: 'all',
     };
   }
 
   componentDidMount() {
     this.APICall();
-    this.getDealTypes();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (!isEqual(prevState.apiResp, this.state.apiResp)) {
-      this.getDealTypes();
-    }
   }
 
   getDealTypes() {
-    const dealTypes = chain(this.state.apiResp)
+    return chain(this.state.redditSubmissions)
       .uniqBy('dealType')
       .map('dealType')
       .value();
-    this.setState({ dealTypes: dealTypes });
   }
 
   async APICall() {
-    // Need error handling
-    const response = await fetch('http://localhost:3030/bapcsales/posts', { mode: 'cors' });
-    const body = await response.json();
+    let body = [];
 
-    this.setState({ apiResp: body, submissions: keyBy(body, 'redditId') });
+    try {
+      body = await (await fetch('http://localhost:3030/bapcsales/posts', { mode: 'cors' })).json();
+    } finally {
+      this.setState({ redditSubmissions: body });
+    }
   }
 
   dealCheckboxCheck(deal, checked) {
-    let uncheckedDealTypes = this.state.uncheckedDealTypes;
+    let currentBulkViewSelection = 'custom';
+    const { uncheckedSubmissionTypes } = this.state;
     if (checked) {
-      uncheckedDealTypes.splice(uncheckedDealTypes.indexOf(deal), 1);
+      uncheckedSubmissionTypes.splice(uncheckedSubmissionTypes.indexOf(deal), 1);
     } else {
-      uncheckedDealTypes.push(deal);
+      uncheckedSubmissionTypes.push(deal);
     }
-    const submissions = filter(this.state.apiResp, (submission) => {
-      if (uncheckedDealTypes.includes(submission.dealType)) {
-        return false;
-      }
-      return true;
-    });
-    this.setState({submissions, uncheckedDealTypes, currentBulkViewSelection: 'custom'})
+    if (uncheckedSubmissionTypes.length === 0) {
+      currentBulkViewSelection = 'all';
+    }
+    if (uncheckedSubmissionTypes.length === this.getDealTypes().length) {
+      currentBulkViewSelection = 'none';
+    }
+
+    this.setState({ uncheckedSubmissionTypes, currentBulkViewSelection });
   }
 
   dealTypes(bulkViewSelection) {
-    console.log(`dealTypes ${bulkViewSelection}`)
     if (bulkViewSelection === 'all') {
-      this.setState({ submissions: this.state.apiResp, uncheckedDealTypes: [], currentBulkViewSelection: bulkViewSelection });
-      return;
+      this.setState({ uncheckedSubmissionTypes: [], currentBulkViewSelection: bulkViewSelection });
     } else if (bulkViewSelection === 'none') {
-      this.setState({ submissions: [], uncheckedDealTypes: this.state.dealTypes, currentBulkViewSelection: bulkViewSelection });
-      return;
+      this.setState({
+        uncheckedSubmissionTypes: this.getDealTypes(),
+        currentBulkViewSelection: bulkViewSelection,
+      });
     }
   }
 
-  renderSubmission(submission) {
-    return <Submission key={ submission.redditId } submission={ submission }/>;
-  }
-
-  renderDealType(dealType, checkedState) {
-    return <DealTypeFilter key={dealType} dealTypes={this.dealCheckboxCheck.bind(this)} checkedState={checkedState} dealType={dealType} />;
-  }
-
   render() {
-    const submissions = Object.keys(this.state.submissions);
-    const dealTypes = this.state.dealTypes;
-    const uncheckedDealTypes = this.state.uncheckedDealTypes;
-    const isCustomDealTypesView = this.state.isCustomDealTypesView;
+    const { uncheckedSubmissionTypes } = this.state;
+
+    let redditSubmissionsToRender = [];
+    if (uncheckedSubmissionTypes.length) {
+      redditSubmissionsToRender = filter(this.state.redditSubmissions, (submission) => {
+        if (uncheckedSubmissionTypes.includes(submission.dealType)) {
+          return false;
+        }
+        return true;
+      });
+    } else {
+      redditSubmissionsToRender = this.state.redditSubmissions;
+    }
 
     return (
       <div style={{}}>
-        <div style={{ justifyContent: "center", display: "flex" }}>
-          <DealTypeToggler isCustom={isCustomDealTypesView} dealTypes={this.dealTypes.bind(this)} value={this.state.currentBulkViewSelection}/>
+        <div style={{ justifyContent: 'center', display: 'flex' }}>
+          {/* Bind so we can call this.setState in the dealTypes function. */}
+          <DealTypeToggler
+            dealTypes={this.dealTypes.bind(this)}
+            value={this.state.currentBulkViewSelection}
+          />
         </div>
-        <div style={{ justifyContent: "center", width: "100%", flexWrap: "wrap", display: "flex", flexDirection: "row" }}>
-          {dealTypes.map((dealType) => {
-            let checkedState = true;
-            if (uncheckedDealTypes.indexOf(dealType) !== -1) {
-              checkedState = false;
-            }
-            return this.renderDealType(dealType, checkedState);
-          })}
+        <div style={{
+          justifyContent: 'center', width: '100%', flexWrap: 'wrap', display: 'flex', flexDirection: 'row',
+        }}
+        >
+          {this.getDealTypes().map((dealType) => (
+            <DealTypeFilter
+              key={dealType}
+              dealTypes={this.dealCheckboxCheck.bind(this)}
+              checkedState={!uncheckedSubmissionTypes.includes(dealType)}
+              dealType={dealType}
+            />
+          ))}
         </div>
-        <div style={{ justifyContent: "center", width: "100%", flexWrap: "wrap", display: "flex", flexDirection: "row" }}>
-          {submissions.map((submission) => {
-            return this.renderSubmission(this.state.submissions[submission])
-          })}
+        <div style={{
+          justifyContent: 'center',
+          width: '100%',
+          flexWrap: 'wrap',
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+        >
+          {
+            redditSubmissionsToRender.map((submission) => (
+              <Submission
+                key={submission.redditId}
+                submission={submission}
+              />
+            ))
+          }
         </div>
       </div>
-    )
+    );
   }
 }
 

@@ -8,31 +8,22 @@ import React from 'react';
 const styles = {};
 
 class DealTypeFilter extends React.Component {
-  state = {
-    checked: true,
-  };
-
-  handleChange = name => event => {
-    this.setState({ [name]: event.target.checked });
-    this.props.dealTypes(event.target.name, event.target.checked);
-  };
-
   render() {
-    const dealType = this.props.dealType;
-    const checkedState = this.props.checkedState;
+    const { dealType } = this.props;
+    const { checkedState } = this.props;
 
     return (
       <FormGroup row>
         <FormControlLabel
-          control={
+          control={(
             <Checkbox
               name={dealType}
               checked={checkedState}
-              onChange={this.handleChange('checked')}
+              onChange={(event) => this.props.dealTypes(event.target.name, event.target.checked)}
               value="checked"
               color="primary"
             />
-          }
+          )}
           label={dealType === '' ? 'unknown' : dealType}
         />
       </FormGroup>
@@ -41,7 +32,6 @@ class DealTypeFilter extends React.Component {
 }
 
 DealTypeFilter.propTypes = {
-  classes: PropTypes.object.isRequired,
   dealType: PropTypes.string.isRequired,
   checkedState: PropTypes.bool.isRequired,
 };

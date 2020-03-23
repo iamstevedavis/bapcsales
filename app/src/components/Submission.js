@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const styles = theme => ({
+const styles = (theme) => ({
   card: {
     minWidth: 275,
     maxWidth: 300,
@@ -37,11 +37,16 @@ const styles = theme => ({
 });
 
 class Submission extends React.Component {
-  state = { expanded: false };
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+    };
+  }
 
-  handleExpandClick = () => {
-    this.setState(state => ({ expanded: !state.expanded }));
-  };
+  handleExpandClick() {
+    this.setState((state) => ({ expanded: !state.expanded }));
+  }
 
   render() {
     const { classes } = this.props;
@@ -53,13 +58,13 @@ class Submission extends React.Component {
           <CardContent className={classes.cardContent}>
             <Typography className={classes.title} color="textSecondary">
               {submission.listingType}
-          </Typography>
+            </Typography>
             <Typography variant="headline" component="h2">
               {submission.dealType}
-          </Typography>
+            </Typography>
             <Typography className={classes.pos} color="textSecondary">
               {submission.title}
-          </Typography>
+            </Typography>
             <Typography component="p">
               {submission.authorName}
             </Typography>
