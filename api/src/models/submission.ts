@@ -36,6 +36,7 @@ export const SubmissionSchema: Schema = new Schema({
   title: String,
 }).pre('save', function (this: ISubmissionModel, next) {
   if (this) {
+    // Before saving, hook in and add the deal type.
     let dType: DealType = 'unknown';
     DealTypeValues.some((element: string): boolean => {
       if (this.title.toLowerCase().search(element) !== -1) {
