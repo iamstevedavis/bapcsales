@@ -1,9 +1,9 @@
-
 import { createLogger, stdSerializers } from 'bunyan';
 import mongoose from 'mongoose';
 import * as restify from 'restify';
-import config from './config.js';
-import { SubmissionController } from './controllers/submission';
+import { api, db } from './config';
+import { getAllSubmissions, getSubmissionByRedditId } from './controllers/submission';
+import setupReddit from './dataPuller/dataPuller';
 
 const log = createLogger({
   name: 'api',
@@ -14,8 +14,10 @@ const log = createLogger({
 
 log.info('Connecting to mongo');
 mongoose.connect(
-  `mongodb://${config.db.username}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.scope}`,
-  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
+  `mongodb://${db.username}:${db.password}@${db.host}:${db.port}/${db.scope}`,
+  {
+    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true,
+  },
 );
 log.info('Connected to mongo');
 
@@ -24,9 +26,9 @@ const server = restify.createServer({
   log,
 });
 
-/*****************************
- * Initialize Restify server *
- *****************************/
+/**
+ * Initialize Restify server
+ */
 server.pre((request, response, next) => {
   request.log.info({ req: request }, 'REQUEST');
   next();
@@ -35,18 +37,15 @@ server.pre((request, response, next) => {
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-/************************************
- * Set up Restify server end-points *
- ************************************/
-
-server.get('/bapcsales/posts', (req, res, next) => {
-  return SubmissionController.getAllSubmissions()
-    .then((submissions) => {
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-      res.send(submissions);
-      return next();
-    });
-});
+/**
+ * Set up Restify server end-points
+ */
+server.get('/bapcsales/posts', (req, res, next) => getAllSubmissions()
+  .then((submissions) => {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+    res.send(submissions);
+    return next();
+  }));
 
 server.get('/bapcsales/posts/:redditId', (req, res, next) => {
   const redditId = (req.params && req.params.redditId);
@@ -57,15 +56,17 @@ server.get('/bapcsales/posts/:redditId', (req, res, next) => {
     });
   }
 
-  return SubmissionController.getSubmissionByRedditId(redditId)
+  return getSubmissionByRedditId(redditId)
     .then((submission) => {
       res.send(200, submission);
       return next();
     });
 });
 
-/*********************
- * Start the service *
- *********************/
-console.log(`Listening on port ${config.api.port}`);
-server.listen(config.api.port);
+setupReddit();
+
+/**
+ * Start the service
+ */
+console.log(`Listening on port ${api.port}`);
+server.listen(api.port);

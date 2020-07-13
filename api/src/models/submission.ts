@@ -53,8 +53,23 @@ export const SubmissionSchema: Schema = new Schema({
   next();
 });
 
-SubmissionSchema.methods.link = (): string => {
-  return (`https://www.reddit.com${this.permalink}`);
-};
+SubmissionSchema.methods.link = (): string => (`https://www.reddit.com${this.permalink}`);
 
 export const Submission: Model<ISubmissionModel> = model<ISubmissionModel>('Submission', SubmissionSchema, 'submissions', true);
+
+// .pre('save', function (this: ISubmissionModel, next) {
+//   if (this) {
+//     let dType: DealType = 'unknown';
+//     DealTypeValues.some((element: string): boolean => {
+//       if (this.title.toLowerCase().search(element) !== -1) {
+//         dType = element as DealType;
+//         return true;
+//       }
+//     });
+//     if (dType === 'unknown') {
+//       // console.log(`Could not match deal type: ${this.title.toLowerCase()}`)
+//     }
+//     this.dealType = dType;
+//   }
+//   next();
+// });

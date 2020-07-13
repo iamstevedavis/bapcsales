@@ -1,20 +1,21 @@
 const table = {
-  'internalServerError': {
+  internalServerError: {
     status: 500,
     message: 'Unknown error occurred.',
   },
-  'userNotFound': {
+  userNotFound: {
     status: 404,
     message: 'Could not find the specified user.',
   },
-  'submissionNotFound': {
+  submissionNotFound: {
     status: 404,
     message: 'Could not find the specified submission.',
   },
-  'invalidParameters': {
+  invalidParameters: {
     status: 400,
     message: 'Invalid parameters.',
   },
 };
 
-export const LookupTable = (code) => table[code];
+const lookupTable = (code) => table[code];
+export { lookupTable as default };

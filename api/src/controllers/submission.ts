@@ -1,12 +1,7 @@
-
 import { Submission } from '../models/submission';
 
-export class SubmissionController {
-  static getSubmissionByRedditId(redditId: string) {
-    return Submission.findOne({ redditId });
-  }
+const getSubmissionByRedditId = (redditId: string) => Submission.findOne({ redditId });
 
-  static getAllSubmissions() {
-    return Submission.find();
-  }
-}
+const getAllSubmissions = () => Submission.find();
+
+export { getSubmissionByRedditId, getAllSubmissions };
