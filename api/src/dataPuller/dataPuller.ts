@@ -6,7 +6,7 @@ import { Submission } from '../models/submission';
 import { fetchHotHistory, fetchNewHistory } from './historySubmissionPull';
 
 const log = createLogger({
-  name: 'app',
+  name: 'reddit-poller',
   stream: process.stdout,
 });
 const snooWrapOpts = {
@@ -26,8 +26,10 @@ const submissions = new SubmissionStream(client, {
 const setupReddit = async () => {
   log.info('Update HOT submission history');
   await fetchHotHistory(client);
+
   log.info('Update NEW submission history');
   await fetchNewHistory(client);
+
   log.info('Poll for new submissions');
   submissions.on('item', async (post) => {
     log.info('Got new submission');
@@ -39,6 +41,7 @@ const setupReddit = async () => {
       subreddit_name_prefixed: post.subreddit_name_prefixed,
       title: post.title,
     });
+
     log.info('Saving submission to database', newSubmission);
     await Submission.findOneAndUpdate(
       { redditId: newSubmission.redditId },

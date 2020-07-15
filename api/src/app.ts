@@ -12,14 +12,27 @@ const log = createLogger({
   },
 });
 
-log.info('Connecting to mongo');
-mongoose.connect(
-  `mongodb://${db.username}:${db.password}@${db.host}:${db.port}/${db.scope}`,
-  {
-    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true,
-  },
-);
-log.info('Connected to mongo');
+(async () => {
+  log.info('Connecting to mongo');
+  try {
+    await mongoose.connect(
+      `mongodb://${db.username}:${db.password}@${db.host}:${db.port}/${db.scope}`,
+      {
+        useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true,
+      },
+    );
+  } catch (error) {
+    log.error('Could not connect to mongo', error);
+    process.exit(22);
+  }
+  log.info('Connected to mongo');
+
+  try {
+    await setupReddit();
+  } catch (error) {
+    log.error('Unable to communicate with reddit', error);
+  }
+})();
 
 const server = restify.createServer({
   name: 'bapcsalesserver',
@@ -63,10 +76,8 @@ server.get('/bapcsales/posts/:redditId', (req, res, next) => {
     });
 });
 
-setupReddit();
-
 /**
  * Start the service
  */
-console.log(`Listening on port ${api.port}`);
+log.info(`Listening on port ${api.port}`);
 server.listen(api.port);

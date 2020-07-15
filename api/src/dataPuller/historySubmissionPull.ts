@@ -2,7 +2,7 @@ import { createLogger } from 'bunyan';
 import { ISnooSubmission, ISubmissionModel, Submission } from '../models/submission';
 
 const log = createLogger({
-  name: 'HistorySubmissionPull',
+  name: 'reddit-poller',
   stream: process.stdout,
 });
 

@@ -1,10 +1,11 @@
 import { chain, filter } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import { default as React, useEffect, useState } from 'react';
+import './App.css';
 import DealTypeFilter from './components/DealTypeFilter';
 import DealTypeToggler from './components/DealTypeToggler';
 import Submission from './components/Submission';
 
-const App = () => {
+function App() {
   const [redditSubmissions, setRedditSubmissions] = useState([]);
   const [uncheckedSubmissionTypes, setUncheckedSubmissionTypes] = useState([]);
   const [currentBulkViewSelection, setCurrentBulkViewSelection] = useState('all');
@@ -102,6 +103,6 @@ const App = () => {
       </div>
     </div>
   );
-};
+}
 
 export default App;
